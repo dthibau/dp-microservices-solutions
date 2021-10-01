@@ -7,6 +7,7 @@ import org.formation.domain.Order;
 import org.formation.domain.OrderRepository;
 import org.formation.web.CreateOrderRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,8 +23,8 @@ public class OrderService {
 	@Autowired
 	OrderRepository orderRepository;
 	
-	
-	
+	@Autowired
+	private CircuitBreakerFactory cbFactory;
 	
 	public Order createOrder(CreateOrderRequest createOrderRequest) {
 		
@@ -31,13 +32,23 @@ public class OrderService {
 		Order order = orderRepository.save(createOrderRequest.getOrder());
 		
 		// Create Ticket in ProductService
-		List<ProductRequest> productRequest = order.getOrderItems().stream().map(i -> new ProductRequest(i)).collect(Collectors.toList());
-		String endPoint = "http://ProductService/api/products/"+order.getId();
+		Ticket t = _createTicket(order);
 		
-		Ticket t = restTemplate.postForObject(endPoint, productRequest, Ticket.class);
 		
 		log.info("Ticket created " + t);
 		
 		return order;
+	}
+	
+	private Ticket _createTicket(Order order) {
+		List<ProductRequest> productRequest = order.getOrderItems().stream().map(i -> new ProductRequest(i)).collect(Collectors.toList());
+		String endPoint = "http://ProductService/api/products/"+order.getId();
+		
+		
+		return cbFactory.create("sendsimple").run(
+				() -> restTemplate.postForObject(endPoint, productRequest, Ticket.class),
+				t -> {log.warning("FALLBACK "+t); return null;}
+				);
+		
 	}
 }
