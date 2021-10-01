@@ -1,6 +1,7 @@
 package org.formation.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,7 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class EventService {
 
-	private static String TICKET_CHANNEL="tickets";
+	@Value("${channels.ticket-channel}")
+	private String TICKET_CHANNEL;
 	
 	@Autowired
 	KafkaTemplate<Long, TicketEvent> kafkaTemplate;

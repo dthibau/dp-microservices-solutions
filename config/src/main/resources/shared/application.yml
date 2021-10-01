@@ -16,3 +16,6 @@ logging:
   level:
     root: INFO
 
+
+channels:
+  ticket-channel: tickets
