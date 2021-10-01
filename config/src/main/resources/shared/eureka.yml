@@ -1,0 +1,43 @@
+   
+server:
+  port: 1111
+  
+    
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+
+      
+      
+---
+spring:
+  profiles: peer1
+
+
+
+eureka:
+  instance:
+    hostname: annuaire1
+  client:
+    serviceUrl:
+      defaultZone: http://annuaire2:1112/eureka/
+    registerWithEureka: true
+    fetchRegistry: true
+
+---
+spring:
+  profiles: peer2
+
+server.port: 1112
+eureka:
+  instance:
+    hostname: annuaire2
+    metadataMap:
+      zone: zone2
+  client:
+    serviceUrl:
+      defaultZone: http://annuaire1:1111/eureka/
+    registerWithEureka: true
+    fetchRegistry: true        
+      
