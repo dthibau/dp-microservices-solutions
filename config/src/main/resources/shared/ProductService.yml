@@ -3,10 +3,8 @@ server:
 
 spring:
   jpa:
-    show-sql: true
-    
+    show-sql: false
     open-in-view: false    
-    
     
 ---
 spring:
