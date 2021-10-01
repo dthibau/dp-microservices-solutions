@@ -6,6 +6,8 @@ import org.formation.domain.ProductRequest;
 import org.formation.domain.Ticket;
 import org.formation.domain.TicketRepository;
 import org.formation.domain.TicketStatus;
+import org.formation.service.ChangeStatusEvent;
+import org.formation.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,20 +24,15 @@ import lombok.extern.java.Log;
 @Log
 public class ProductController {
 	
+
 	@Autowired
-	TicketRepository ticketRepository;
-	
+	TicketService ticketService;
 
 	@PostMapping(path="/{orderId}")
 	public ResponseEntity<Ticket> acceptOrder(@PathVariable Long orderId, @RequestBody List<ProductRequest> productsRequest) {
 		
-		Ticket t = new Ticket();
-		t.setOrderId(""+orderId);
-		t.setProductRequests(productsRequest);
-		t.setStatus(TicketStatus.CREATED);
 		
-		t = ticketRepository.save(t);
-		
+		Ticket t = ticketService.createTicket(orderId, productsRequest);
 		log.info("Ticket created "+ t);
 		
 		return new ResponseEntity<Ticket>(t,HttpStatus.CREATED);
@@ -43,6 +40,11 @@ public class ProductController {
 	
 	@PostMapping(path = "/tickets/{ticketId}/pickup")
 	public ResponseEntity<Ticket> noteTicketReadyToPickUp(@PathVariable Long ticketId) {
-		return null;
+		
+		Ticket t = ticketService.readyToPickUp(ticketId);
+
+		log.info("Ticket readyToPickUp "+ t.getId());
+
+		return new ResponseEntity<Ticket>(t,HttpStatus.CREATED);
 	}
 }

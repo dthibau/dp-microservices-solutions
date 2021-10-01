@@ -11,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 
 @Entity
@@ -26,6 +28,7 @@ public class Ticket {
 	private TicketStatus status;
 	
 	@OneToMany(cascade = CascadeType.ALL)
+	@JsonIgnore
 	List<ProductRequest> productRequests;
 	
 	
