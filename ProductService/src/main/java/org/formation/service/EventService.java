@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class EventService {
 
-	private static String TICKET_CHANNEL="tickets";
+	private static String TICKET_CHANNEL="tickets-status";
 	
 	@Autowired
 	KafkaTemplate<Long, TicketEvent> kafkaTemplate;
