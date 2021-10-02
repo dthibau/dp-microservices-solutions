@@ -3,8 +3,8 @@ package org.formation.service;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.formation.domain.ChangeStatusEvent;
-import org.formation.domain.ChangeStatusEventRepository;
+import org.formation.domain.event.TicketStatusEventRepository;
+import org.formation.domain.event.TicketStatusEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -19,11 +19,11 @@ public class MessageRelayService {
 	EventService eventService;
 	
 	@Autowired
-	ChangeStatusEventRepository eventRepository;
+	TicketStatusEventRepository eventRepository;
 
-	@Scheduled(fixedDelay = 10l, timeUnit = TimeUnit.SECONDS)
+	@Scheduled(fixedDelay = 60l, timeUnit = TimeUnit.SECONDS)
 	public void sendEvents() {
-		List<ChangeStatusEvent> events = eventRepository.findAll();
+		List<TicketStatusEvent> events = eventRepository.findAll();
 		
 		events.stream().forEach(e -> {
 			log.info("Sending event"+e);

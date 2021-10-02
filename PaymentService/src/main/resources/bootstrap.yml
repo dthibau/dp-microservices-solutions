@@ -1,8 +1,7 @@
 spring:
   application:
-    name: DeliveryService
-
-        
+    name: PaymentService
+    
   cloud:
     config:
       uri:

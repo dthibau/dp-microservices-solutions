@@ -1,4 +1,6 @@
-package org.formation.domain;
+package org.formation.domain.event;
+
+import java.time.Instant;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -7,31 +9,35 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import org.formation.service.TicketEvent;
+import org.formation.domain.TicketStatus;
 
 import lombok.Data;
 
 @Entity
 @Data
-public class ChangeStatusEvent extends TicketEvent {
+public class TicketStatusEvent  {
 
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	Long id; 
+
+	long ticketId;
+	long orderId;
+	Instant instant;
 	
 	@Enumerated(EnumType.STRING)
 	private TicketStatus oldStatus;
 	@Enumerated(EnumType.STRING)
 	private TicketStatus newStatus;
-	private Long ticketId;
 	
-	public ChangeStatusEvent() {
+	public TicketStatusEvent() {
 		super();
 	}
-	public ChangeStatusEvent(Ticket ticket, TicketStatus oldStatus, TicketStatus newStatus) {
-		super(ticket);
+	public TicketStatusEvent(Long ticketId, Long orderId, TicketStatus oldStatus, TicketStatus newStatus) {
+		this.ticketId= ticketId;
+		this.orderId = orderId;
 		this.oldStatus = oldStatus;
 		this.newStatus = newStatus;
-		ticketId = ticket.getId();
 	}
+
 	
 }

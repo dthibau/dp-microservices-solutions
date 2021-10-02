@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import lombok.Data;
 
@@ -41,4 +42,10 @@ public class Order {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "order")
 	List<OrderItem> orderItems = new ArrayList<>();
 	
+	
+	@Transient 
+	public Float getAmount() {
+		
+		return orderItems.stream().map(i -> i.getPrice() * i.getQuantity()).reduce(0f, (a, b) -> a + b);
+	}
 }

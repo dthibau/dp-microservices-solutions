@@ -1,9 +1,9 @@
-package org.formation.domain;
+package org.formation.domain.event;
 
 import lombok.Data;
 
 @Data
-public class ChangeStatusEvent {
+public class TicketStatusEvent {
 
 	private Long ticketId;
 	
