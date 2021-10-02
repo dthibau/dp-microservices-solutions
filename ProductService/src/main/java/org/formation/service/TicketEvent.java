@@ -12,6 +12,9 @@ public class TicketEvent {
 	Ticket ticket;
 	Instant instant;
 	
+	public TicketEvent() {
+		super();
+	}
 	public TicketEvent(Ticket ticket) {
 		super();
 		this.ticket = ticket;

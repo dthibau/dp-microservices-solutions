@@ -2,6 +2,8 @@ package org.formation.service;
 
 import java.util.List;
 
+import org.formation.domain.ChangeStatusEvent;
+import org.formation.domain.ChangeStatusEventRepository;
 import org.formation.domain.ProductRequest;
 import org.formation.domain.Ticket;
 import org.formation.domain.TicketRepository;
@@ -16,6 +18,9 @@ public class TicketService {
 
 	@Autowired
 	TicketRepository ticketRepository;
+	
+	@Autowired
+	ChangeStatusEventRepository eventRepository;
 	
 	@Autowired
 	EventService eventService;
@@ -37,10 +42,12 @@ public class TicketService {
 		ChangeStatusEvent event = new ChangeStatusEvent(t, t.getStatus(),TicketStatus.READY_TO_PICK);
 		
 		t.setStatus(TicketStatus.READY_TO_PICK);
-		eventService.notify(event);
+		
 		
 		ticketRepository.save(t);
 		
+		eventRepository.save(event);
+
 		return t;
 		
 
