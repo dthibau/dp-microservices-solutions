@@ -2,11 +2,11 @@ package org.formation.web;
 
 import java.util.List;
 
+import org.formation.domain.ChangeStatusEvent;
 import org.formation.domain.ProductRequest;
 import org.formation.domain.Ticket;
 import org.formation.domain.TicketRepository;
 import org.formation.domain.TicketStatus;
-import org.formation.service.ChangeStatusEvent;
 import org.formation.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

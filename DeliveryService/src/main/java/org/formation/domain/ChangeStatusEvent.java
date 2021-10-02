@@ -1,4 +1,4 @@
-package org.formation.service;
+package org.formation.domain;
 
 import lombok.Data;
 
