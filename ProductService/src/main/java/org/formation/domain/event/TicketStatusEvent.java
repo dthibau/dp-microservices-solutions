@@ -25,17 +25,14 @@ public class TicketStatusEvent  {
 	Instant instant;
 	
 	@Enumerated(EnumType.STRING)
-	private TicketStatus oldStatus;
-	@Enumerated(EnumType.STRING)
 	private TicketStatus newStatus;
 	
 	public TicketStatusEvent() {
 		super();
 	}
-	public TicketStatusEvent(Long ticketId, Long orderId, TicketStatus oldStatus, TicketStatus newStatus) {
+	public TicketStatusEvent(Long ticketId, Long orderId, TicketStatus newStatus) {
 		this.ticketId= ticketId;
 		this.orderId = orderId;
-		this.oldStatus = oldStatus;
 		this.newStatus = newStatus;
 	}
 

@@ -1,13 +1,9 @@
 package org.formation.service;
 
-import java.util.List;
-
-import org.formation.domain.ProductRequest;
+import org.formation.domain.ResultDomain;
 import org.formation.domain.Ticket;
 import org.formation.domain.TicketRepository;
-import org.formation.domain.TicketStatus;
 import org.formation.domain.event.OrderEvent;
-import org.formation.domain.event.TicketStatusEvent;
 import org.formation.domain.event.TicketStatusEventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,55 +35,37 @@ public class TicketService {
 	@KafkaListener(topics="#{'${app.channel.order-status}'}", id="ticket-service")
 	public void handleOrderEvent(OrderEvent orderEvent) {
 		log.info("handle ORDER_STATUS " + orderEvent.getStatus());
-		String status = orderEvent.getStatus();
-		Ticket t = null;
-		TicketStatus oldStatus = null;
-		switch (status ) {
+		ResultDomain resultDomain = null;
+		switch (orderEvent.getStatus() ) {
 		case "PENDING" : 
-			t = _createTicket(orderEvent.getOrderId(), orderEvent.getProductRequest());
+			resultDomain = new ResultDomain(ticketRepository.save(Ticket.createTicket(orderEvent)));
 			break;
 		case "APPROVED" :
-			t =ticketRepository.findByOrderId(orderEvent.getOrderId());
-			oldStatus = t.getStatus();
-			t.setStatus(TicketStatus.APPROVED);
-			ticketRepository.save(t);
+			Ticket t =ticketRepository.findByOrderId(orderEvent.getOrderId());
+			resultDomain = t.approveTicket();
 			break;
 		case "REJECTED" :
 			t =ticketRepository.findByOrderId(orderEvent.getOrderId());
-			oldStatus = t.getStatus();
-			t.setStatus(TicketStatus.REJECTED);
-			ticketRepository.save(t);
+			resultDomain = t.rejectTicket();
 			break;
 		}
-		
-		TicketStatusEvent event = new TicketStatusEvent(t.getId(),t.getOrderId(),oldStatus,t.getStatus());
-		eventRepository.save(event);
+
+		ticketRepository.save(resultDomain.getTicket());
+		eventRepository.save(resultDomain.getStatusEvent());
 		
 	}
 	
 	public Ticket readyToPickUp(Long ticketId) {
 		
-		Ticket t = ticketRepository.findById(ticketId).orElseThrow();
-		TicketStatusEvent event = new TicketStatusEvent(t.getId(), t.getOrderId(), t.getStatus(),TicketStatus.READY_TO_PICK);
+		Ticket t = ticketRepository.findById(ticketId).orElseThrow();	
+		ResultDomain resultDomain = t.readyToPickUp();
 		
-		t.setStatus(TicketStatus.READY_TO_PICK);
-		
-		
-		ticketRepository.save(t);
-		
-		eventRepository.save(event);
+		ticketRepository.save(resultDomain.getTicket());
+		eventRepository.save(resultDomain.getStatusEvent());
 
-		return t;
+		return resultDomain.getTicket();
 		
 
 	}
 	
-	private Ticket _createTicket(Long orderId, List<ProductRequest> productRequest) {
-		Ticket t = new Ticket();
-		t.setOrderId(orderId);
-		t.setProductRequests(productRequest);
-		t.setStatus(TicketStatus.PENDING);
-		
-		return ticketRepository.save(t);
-	}
 }
