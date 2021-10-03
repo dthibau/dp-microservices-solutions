@@ -8,12 +8,20 @@ import javax.annotation.Resource;
 
 import org.formation.domain.Livraison;
 import org.formation.domain.Order;
+import org.formation.domain.OrderDtORepository;
 import org.formation.domain.OrderDto;
+import org.formation.domain.event.DeliveryEvent;
+import org.formation.domain.event.OrderEvent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import lombok.extern.java.Log;
+
 
 @Service
+@Log
 public class QueryService {
 
 	@Resource
@@ -22,6 +30,8 @@ public class QueryService {
 	@Resource
 	RestTemplate livraisonRestTemplate;
 	
+	@Autowired
+	OrderDtORepository orderDtoRepository;
 	
 	public OrderDto getOrderDetails(Long orderId) {
 		
@@ -43,5 +53,27 @@ public class QueryService {
 		});
 
 		return ret;
+	}
+	
+	@KafkaListener(topics="#{'${app.channel.order-status}'}", id="query-order")
+	public void handleOrderEvent(OrderEvent orderEvent) {
+		
+		OrderDto orderDto = new OrderDto();
+		orderDto.setOrderId(orderEvent.getOrderId());
+		orderDtoRepository.save(orderDto);
+	}
+	
+	@KafkaListener(topics="#{'${app.channel.delivery-status}'}", id="query-delivery")
+	public void handleDeliveryEvent(DeliveryEvent deliveryEvent) {
+		
+		if ( deliveryEvent.getStatus().equals("AFFECTE") ) {
+			OrderDto orderDto = orderDtoRepository.findById(deliveryEvent.getLivraison().getOrderId()).orElseThrow();
+			orderDto.setNomLivreur(deliveryEvent.getLivraison().getLivreur().getNom());
+			orderDto.setTelephoneLivreur(deliveryEvent.getLivraison().getLivreur().getTelephone());
+			orderDtoRepository.save(orderDto);
+		}
+		
+				
+		
 	}
 }

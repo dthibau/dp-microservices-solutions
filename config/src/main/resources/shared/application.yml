@@ -18,6 +18,7 @@ app:
     ticket-status: 'ticket-status'
     payment-request: 'payment-request'
     payment-response: 'payment-response'
+    delivery-status: 'delivery-status'
             
 eureka:
   client:
