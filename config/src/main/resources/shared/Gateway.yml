@@ -1,0 +1,34 @@
+server:
+  port: 8080
+  
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: route-order
+          uri: lb://ORDERSERVICE
+          predicates:
+            - Path= /order/**
+          filters:
+            - RewritePath=/order/?(?<remaining>.*), /$\{remaining}
+        - id: route-product
+          uri: lb://PRODUCTSERVICE
+          predicates:
+            - Path= /product/**
+          filters:
+            - RewritePath=/product/?(?<remaining>.*), /$\{remaining}
+        - id: route-delivery
+          uri: lb://DELIVERYSERVICE
+          predicates:
+            - Path= /delivery/**
+          filters:
+            - RewritePath=/delivery/?(?<remaining>.*), /$\{remaining}
+        - id: route-query
+          uri: lb://ORDERQUERYSERVICE
+          predicates:
+            - Path= /query/**
+          filters:
+            - RewritePath=/query/?(?<remaining>.*), /$\{remaining}
+      discovery:
+        locator:
+          enabled: false
