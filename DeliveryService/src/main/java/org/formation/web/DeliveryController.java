@@ -1,5 +1,7 @@
 package org.formation.web;
 
+import java.util.List;
+
 import org.formation.domain.Livraison;
 import org.formation.domain.LivraisonRepository;
 import org.formation.domain.Livreur;
@@ -7,6 +9,7 @@ import org.formation.domain.LivreurRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,4 +51,18 @@ public class DeliveryController {
 		return new ResponseEntity<Livraison>(livraison,HttpStatus.OK);
 	}
 	
+	@GetMapping(path = "/unaffected")
+	public List<Livraison> getUnaffectedLivraison() {
+		return livraisonRepository.findUnaffected();
+	}
+	
+	@GetMapping(path = "/order/{orderId}")
+	public Livraison getLivraisonByOrderId(Long orderId) {
+		return livraisonRepository.findByOrderId(orderId);
+	}
+	
+	@GetMapping(path = "/{livraisonId}")
+	public Livraison getLivraison(@PathVariable Long livraisonId) {
+		return livraisonRepository.findById(livraisonId).orElseThrow();
+	}
 }

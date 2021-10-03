@@ -27,7 +27,7 @@ public class DeliveryService {
 		switch (ticketEvent.getNewStatus()) {
 
 		case "READY_TO_PICK":
-			Livraison l = _createDelivery(ticketEvent.getTicketId());
+			Livraison l = _createDelivery(ticketEvent.getTicketId(), ticketEvent.getOrderId());
 			log.info("Livraison créée " + l);
 			break;
 			
@@ -35,10 +35,10 @@ public class DeliveryService {
 
 	}
 
-	private Livraison _createDelivery(Long ticketId) {
+	private Livraison _createDelivery(Long ticketId, Long orderId) {
 		Livraison l = new Livraison();
 		l.setCreationDate(Instant.now());
-		l.setNoCommande("" + ticketId);
+		l.setOrderId(orderId);
 		l.setStatus(Status.CREE);
 
 		return livraisonRepository.save(l);
