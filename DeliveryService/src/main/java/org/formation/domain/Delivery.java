@@ -17,7 +17,7 @@ public class Delivery {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	private String noCommande;
+	private long orderId;
 	
 	@OneToOne
 	private Courier livreur;

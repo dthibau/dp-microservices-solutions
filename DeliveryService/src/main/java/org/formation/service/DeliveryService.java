@@ -2,10 +2,10 @@ package org.formation.service;
 
 import java.time.Instant;
 
-import org.formation.domain.ChangeStatusEvent;
 import org.formation.domain.Delivery;
 import org.formation.domain.DeliveryRepository;
 import org.formation.domain.Status;
+import org.formation.service.event.TicketStatusEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
@@ -21,16 +21,16 @@ public class DeliveryService {
 	@Autowired
 	DeliveryRepository deliveryRepository;
 
-	@KafkaListener(id = "DeliveryService", topics = "${channels.ticket-channel}")
-	public void ticketChanged(ChangeStatusEvent ticketEvent) {
+	@KafkaListener(id = "DeliveryService", topics = "${app.channel.ticket-event}")
+	public void ticketChanged(TicketStatusEvent ticketEvent) {
 
-		switch (ticketEvent.getNewStatus()) {
+		switch (ticketEvent.getStatus()) {
 
 		case "READY_TO_PICK":
 			Delivery l = _createDelivery(ticketEvent.getTicketId());
 			log.info("Livraison créée " + l);
 			break;
-			
+
 		}
 
 	}
@@ -38,7 +38,6 @@ public class DeliveryService {
 	private Delivery _createDelivery(Long ticketId) {
 		Delivery l = new Delivery();
 		l.setCreationDate(Instant.now());
-		l.setNoCommande("" + ticketId);
 		l.setStatus(Status.CREE);
 
 		return deliveryRepository.save(l);

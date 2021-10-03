@@ -33,4 +33,5 @@ app:
     order-saga: 'order-saga'
     ticket-command: 'ticket-command'
     payment-command: 'payment-command'
+    payment-response: 'payment-response'
     ticket-event: 'ticket-event'

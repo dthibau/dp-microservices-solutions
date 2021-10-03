@@ -5,6 +5,8 @@ import java.util.List;
 import org.formation.domain.ProductRequest;
 import org.formation.domain.ResultDomain;
 import org.formation.domain.Ticket;
+import org.formation.domain.TicketRepository;
+import org.formation.domain.TicketStatus;
 import org.formation.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +32,15 @@ public class TicketController {
 
 	@Autowired
 	TicketService ticketService;
+	
+	@Autowired
+	TicketRepository ticketRepository;
 
+	@GetMapping("/approved")
+	public List<Ticket> findApproved() {
+		return ticketRepository.findAll().stream().filter(t -> t.getStatus().equals(TicketStatus.APPROVED)).toList();
+	}
+	
 	@PostMapping(path="/{orderId}")
 	public ResponseEntity<Ticket> acceptOrder(@PathVariable Long orderId, @RequestBody List<ProductRequest> productsRequest) {
 		
