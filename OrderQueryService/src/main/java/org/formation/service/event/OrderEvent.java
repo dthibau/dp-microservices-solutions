@@ -3,14 +3,9 @@ package org.formation.service.event;
 import lombok.Data;
 
 @Data
-public class TicketStatusEvent {
+public class OrderEvent {
 
-	private Long ticketId;
-	
-	long orderId;
-
-	
+	private long orderId;
 	private String status;
-	
 	
 }

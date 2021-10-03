@@ -6,6 +6,7 @@ import org.formation.domain.Courier;
 import org.formation.domain.CourierRepository;
 import org.formation.domain.Delivery;
 import org.formation.domain.DeliveryRepository;
+import org.formation.service.DeliveryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,28 +23,40 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/deliveries")
 public class DeliveryController {
-	
+
 	@Autowired
 	DeliveryRepository deliveryRepository;
 	
 	@Autowired
 	CourierRepository courierRepository;
+	
+	@Autowired
+	DeliveryService deliveryService;
 
 	@GetMapping
 	public List<Delivery> findDeliveries(@RequestParam(required = false) String status) {
 		return deliveryRepository.findAll();
 	}
 
+
+	@PostMapping(path = "/{livraisonId}/{livreurId}")
+	public ResponseEntity<Delivery> affectLivreur(@PathVariable long livraisonId, @PathVariable long livreurId) {
+
+		Delivery livraison = deliveryService.affectLivreur(livraisonId, livreurId);
+
+		return new ResponseEntity<Delivery>(livraison, HttpStatus.OK);
+	}
+
 	@GetMapping(path = "/unaffected")
 	public List<Delivery> getUnaffectedLivraison() {
 		return deliveryRepository.findUnaffected();
 	}
-	
+
 	@GetMapping(path = "/order/{orderId}")
 	public Delivery getLivraisonByOrderId(Long orderId) {
 		return deliveryRepository.findByOrderId(orderId);
 	}
-	
+
 	@GetMapping(path = "/{livraisonId}")
 	public Delivery getLivraison(@PathVariable Long livraisonId) {
 		return deliveryRepository.findById(livraisonId).orElseThrow();
@@ -70,12 +83,10 @@ public class DeliveryController {
 	
 	@PostMapping(path = "/{deliveryId}/affect/{courierId}")
 	public ResponseEntity<Delivery> affectCourier(@PathVariable long deliveryId, @PathVariable long courierId) {
+	
 		
-		Delivery delivery = deliveryRepository.findById(deliveryId).orElseThrow();
-		Courier courier = courierRepository.findById(courierId).orElseThrow();
-		delivery.setLivreur(courier);
-		deliveryRepository.save(delivery);
-		return new ResponseEntity<Delivery>(delivery,HttpStatus.OK);
+
+		return new ResponseEntity<Delivery>(deliveryService.affectLivreur(deliveryId, courierId),HttpStatus.OK);
 	}
 	
 

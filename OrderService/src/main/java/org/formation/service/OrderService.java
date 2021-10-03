@@ -5,12 +5,13 @@ import java.util.stream.Collectors;
 
 import org.formation.domain.Order;
 import org.formation.domain.OrderRepository;
+import org.formation.service.event.OrderEvent;
 import org.formation.service.saga.CreateOrderSaga;
 import org.formation.web.CreateOrderRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import lombok.extern.java.Log;
 
@@ -18,8 +19,11 @@ import lombok.extern.java.Log;
 @Log
 public class OrderService {
 
+	@Value("${app.channel.order-event}")
+	String ORDER_STATUS_CHANNEL;
+	
 	@Autowired
-	RestTemplate restTemplate;
+	KafkaTemplate<Long, OrderEvent> kafkaOrderTemplate;
 	
 	@Autowired
 	OrderRepository orderRepository;
@@ -31,6 +35,12 @@ public class OrderService {
 		
 		// Save in local DataBase
 		Order order = orderRepository.save(createOrderRequest.getOrder());
+		
+		List<ProductRequest> productRequest = order.getOrderItems().stream().map(i -> new ProductRequest(i)).toList();
+
+		OrderEvent event = new OrderEvent(order.getId(), productRequest, order.getStatus());
+		
+		kafkaOrderTemplate.send(ORDER_STATUS_CHANNEL,event);
 		
 		// Starting SAGA
 		createOrderSaga.startSaga(order);

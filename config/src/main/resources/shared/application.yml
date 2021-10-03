@@ -34,4 +34,6 @@ app:
     ticket-command: 'ticket-command'
     payment-command: 'payment-command'
     payment-response: 'payment-response'
+    order-event: 'order-event'
     ticket-event: 'ticket-event'
+    delivery-event: 'delivery-event'

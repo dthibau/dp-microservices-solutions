@@ -24,6 +24,8 @@ public class TicketStatusEvent {
 
 	long ticketId;
 	
+	long orderId;
+	
 	Instant instant;
 	
 	@Enumerated(EnumType.STRING)
@@ -34,10 +36,11 @@ public class TicketStatusEvent {
 	public TicketStatusEvent() {
 		super();
 	}
-	public TicketStatusEvent(Long ticketId, TicketStatus status, String payload) {
+	public TicketStatusEvent(Long ticketId, Long orderId, TicketStatus status, String payload) {
 		super();
 		if ( ticketId != null )
 			this.ticketId = ticketId;
+		this.orderId = orderId;
 		this.status = status;
 		this.payload = payload;
 		instant = Instant.now();
