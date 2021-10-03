@@ -9,6 +9,8 @@ spring:
   datasource:
     url:
       'jdbc:h2:mem:testdb'
+  jpa:
+    show-sql: true
 
 app:
   channel:

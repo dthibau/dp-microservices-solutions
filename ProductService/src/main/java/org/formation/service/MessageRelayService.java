@@ -21,7 +21,7 @@ public class MessageRelayService {
 	@Autowired
 	TicketStatusEventRepository eventRepository;
 
-	@Scheduled(fixedDelay = 60l, timeUnit = TimeUnit.SECONDS)
+	@Scheduled(fixedDelay = 10l, timeUnit = TimeUnit.SECONDS)
 	public void sendEvents() {
 		List<TicketStatusEvent> events = eventRepository.findAll();
 		
