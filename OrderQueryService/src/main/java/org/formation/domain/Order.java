@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class Order {
-	private long orderId;
+	private long id;
 	private Instant date;
 	
 	DeliveryInformation deliveryInformation;

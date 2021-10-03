@@ -14,7 +14,7 @@ public class OrderDto {
 	String telephoneLivreur;
 	
 	public OrderDto(Order order, Livraison livraison) {
-		this.orderId = order.getOrderId();
+		this.orderId = order.getId();
 		this.date = order.getDate();
 		this.address = order.getDeliveryInformation().getAddress();
 		this.nomLivreur = livraison.getLivreur().getNom();

@@ -1,5 +1,7 @@
 package org.formation.web;
 
+import java.util.List;
+
 import org.formation.domain.OrderDto;
 import org.formation.service.QueryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,5 +22,11 @@ public class QueryController {
 	public OrderDto getOrderDetails(@PathVariable long orderId) {
 		
 		return queryService.getOrderDetails(orderId);
+	}
+	
+	@GetMapping()
+	public List<OrderDto> getOrdersDetails() {
+		
+		return queryService.getOrdersDetails();
 	}
 }
