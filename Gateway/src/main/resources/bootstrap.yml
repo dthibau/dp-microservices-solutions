@@ -9,10 +9,30 @@ spring:
       - http://config:8888
       fail-fast: true
       
-      
+
+
+    gateway:
+      routes:
+        - id: route-order
+          uri: lb://ORDERSERVICE
+          predicates:
+            - Path= /order/**
+          filters:
+            - RewritePath=/order/?(?<remaining>.*), /$\{remaining}
+      discovery:
+        locator:
+          enabled: true      
       
 management:
   endpoints:
     web:
       exposure:
         include: '*'
+
+        
+logging:
+  level:
+    '[org.springframework]': debug
+    
+    
+     

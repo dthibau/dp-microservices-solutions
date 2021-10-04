@@ -33,8 +33,9 @@ public class DeliveryRepositoryTest {
 	@Test
 	void testAffected() {
 		
-		Delivery delivery1 = Delivery.builder().orderId(1l).creationDate(Instant.now()).build();
+		Delivery delivery1 = entityManager.find(Delivery.class, 1l);
 		entityManager.persist(delivery1);
+
 		// Livreu 1 exist
 		Courier courier1 = entityManager.find(Courier.class, 1l);
 		Delivery delivery2 = Delivery.builder().orderId(2l).creationDate(Instant.now()).courier(courier1).build();
