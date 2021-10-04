@@ -1,6 +1,7 @@
 package org.formation.web;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.formation.domain.Order;
 import org.formation.domain.OrderRepository;
@@ -36,7 +37,7 @@ public class OrderController {
 	
 	@GetMapping
 	public List<Order> findAllOrders() {
-		return orderRepository.findAll().stream().map(o -> orderRepository.fullLoad(o.getId()).orElseThrow()).toList();
+		return orderRepository.findAll().stream().map(o -> orderRepository.fullLoad(o.getId()).orElseThrow()).collect(Collectors.toList());
 	}
 	
 	@GetMapping(path="/{orderId}")

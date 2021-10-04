@@ -16,12 +16,12 @@ public class DependenciesConfiguration {
 	@Bean
 	@LoadBalanced
 	RestTemplate orderRestTemplate() {
-		return builder.rootUri("http://OrderService/api/orders").build();
+		return builder.rootUri("http://OrderService/api/orders").defaultHeader("Content-Type","application/json").build();
 	}
 	
 	@Bean
 	@LoadBalanced
 	RestTemplate livraisonRestTemplate() {
-		return builder.rootUri("http://DeliveryService/api/livraison").build();
+		return builder.rootUri("http://DeliveryService/api/livraison").defaultHeader("Content-Type","application/json").build();
 	}
 }

@@ -8,3 +8,5 @@ spring:
       uri:
       - http://config:8888
       fail-fast: true
+  jpa:
+    show-sql: true

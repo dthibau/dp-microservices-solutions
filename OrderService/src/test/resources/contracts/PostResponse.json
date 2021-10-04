@@ -1,0 +1,27 @@
+{
+  "id": 1,
+  "date": null,
+  "discount": 0,
+  "status": "PENDING",
+  "paymentInformation": {
+    "paymentToken": "AA"
+  },
+  "deliveryInformation": {
+    "deliveryTime": null,
+    "address": {
+      "rue": "RUE",
+      "ville": "VILLE",
+      "codePostal": "75001"
+    }
+  },
+  "orderItems": [
+    {
+      "id": 1,
+      "refProduct": "REF1",
+      "price": 10,
+      "quantity": 2,
+      "order": null
+    }
+  ],
+  "amount": 20
+}

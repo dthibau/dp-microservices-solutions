@@ -27,8 +27,8 @@ public class OrderDto {
 		this.orderId = order.getId();
 		this.date = order.getDate();
 		this.address = order.getDeliveryInformation().getAddress();
-		this.nomLivreur = livraison.getLivreur().getNom();
-		this.telephoneLivreur = livraison.getLivreur().getTelephone();
+		this.nomLivreur = livraison.getLivreur() != null ? livraison.getLivreur().getNom() : null;
+		this.telephoneLivreur = livraison.getLivreur() != null ? livraison.getLivreur().getTelephone() : null;
 		
 	}
 }
