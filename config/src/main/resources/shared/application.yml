@@ -32,6 +32,12 @@ eureka:
       zone: zone1
     
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+    
 logging:
   level:
     root: INFO
