@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: config
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      name: config
+  template:
+    metadata:
+      labels:
+        name: config
+    spec:
+      containers:
+      - name: config
+        image: solutions_config
+        imagePullPolicy: Always
+
+
+

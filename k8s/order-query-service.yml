@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-query-service
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-query-service
+  template:
+    metadata:
+      labels:
+        app: order-query-service
+    spec:
+      containers:
+      - name: order-query-service
+        image: dthibau/dp-order-query-service
+        imagePullPolicy: Always
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-query-service
+  labels:
+    app: order-query-service
+spec:
+  type: ClusterIP
+  ports:
+   - port: 8085
+     targetPort: 8085
+  selector:
+   app: order-query-service
