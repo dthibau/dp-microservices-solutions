@@ -1,0 +1,101 @@
+version: '2.2'
+services:
+  config:
+    build: ./config/
+    healthcheck:
+        test: curl -f http://localhost:8888/proxy/default && echo 'cool, it works'
+        interval: 10s
+        timeout: 10s
+        retries: 5
+    networks:
+     - back
+    ports:
+     - "8888:8888"
+  eureka:
+    image: dthibau/dp-eureka
+    networks:
+     - back
+    ports:
+     - "1111:1111"
+    depends_on: 
+      config:
+        condition: service_healthy
+  livraison-service:
+    image: dthibau/dp-livraison-service
+    networks:
+     - back
+    restart: always
+    depends_on: 
+      config:
+        condition: service_healthy
+  order-service:
+    image: dthibau/dp-order-service
+    networks:
+     - back
+    restart: always
+    depends_on: 
+      config:
+        condition: service_healthy
+  order-query-service:
+    image: dthibau/dp-order-query-service
+    networks:
+      - back
+    restart: always
+    depends_on: 
+      config:
+        condition: service_healthy
+  payment-service:
+    image: dthibau/dp-payment-service
+    networks:
+      - back
+    restart: always
+    depends_on: 
+      config:
+        condition: service_healthy
+  product-service:
+    image: dthibau/dp-product-service
+    networks:
+      - back
+    restart: always
+    depends_on: 
+      config:
+        condition: service_healthy
+  gateway:
+    image: dthibau/dp-gateway
+    networks:
+      - back
+    restart: always
+    depends_on: 
+      config:
+        condition: service_healthy
+    networks:
+      - front
+      - back
+    ports:
+      - 8080:8080
+    restart: always
+    depends_on: 
+      config:
+        condition: service_healthy
+  zookeeper:
+    image: 'wurstmeister/zookeeper:latest'
+    networks:
+      - back
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    image: 'wurstmeister/kafka'
+    networks:
+      - back
+    ports:
+      - '9092:9092'
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      ALLOW_PLAINTEXT_LISTENER: 'yes'
+
+networks:
+  back:
+  front:
