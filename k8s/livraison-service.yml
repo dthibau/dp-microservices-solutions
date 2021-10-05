@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: livraison-service
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: livraison-service
+  template:
+    metadata:
+      labels:
+        app: livraison-service
+    spec:
+      containers:
+      - name: livraison-service
+        env:
+         - name: SPRING_KAFKA_BOOTSTRAP-SERVERS
+           value: my-release-kafka.default.svc.cluster.local
+        image: dthibau/dp-livraison-service
+        imagePullPolicy: Always
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: livraison-service
+  labels:
+    app: livraison-service
+spec:
+  type: ClusterIP
+  ports:
+   - port: 8081
+     targetPort: 8081
+  selector:
+   app: livraison-service
