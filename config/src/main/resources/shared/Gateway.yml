@@ -33,3 +33,40 @@ spring:
         locator:
           enabled: false
 
+--- 
+spring:
+  config:
+    activate:
+      on-profile:
+      - kubernetes
+      
+  cloud:
+    gateway:
+      routes:
+        - id: route-order
+          uri: http://order-service:8082
+          predicates:
+            - Path= /order/**
+          filters:
+            - RewritePath=/order/?(?<remaining>.*), /$\{remaining}
+        - id: route-product
+          uri: http://product-service:8083
+          predicates:
+            - Path= /product/**
+          filters:
+            - RewritePath=/product/?(?<remaining>.*), /$\{remaining}
+        - id: route-delivery
+          uri: http://livraison-service:8081
+          predicates:
+            - Path= /delivery/**
+          filters:
+            - RewritePath=/delivery/?(?<remaining>.*), /$\{remaining}
+        - id: route-query
+          uri: http://order-query-service:8085
+          predicates:
+            - Path= /query/**
+          filters:
+            - RewritePath=/query/?(?<remaining>.*), /$\{remaining}
+      discovery:
+        locator:
+          enabled: false     
