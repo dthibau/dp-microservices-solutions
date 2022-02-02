@@ -3,13 +3,11 @@ server:
 
 spring:
   jpa:
-    show-sql: true
+    show-sql: false
     
     open-in-view: false    
     
-  kafka:
-    producer:
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer    
+ 
 ---
 spring:
   config:
