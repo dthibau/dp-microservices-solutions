@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class EventService {
 
-	@Value("${channels.ticket-channel}")
+	@Value("${app.channel.ticket-event}")
 	private String TICKET_CHANNEL;
 	
 	@Autowired
