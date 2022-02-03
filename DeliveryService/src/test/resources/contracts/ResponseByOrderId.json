@@ -1,0 +1,11 @@
+{
+  "id": 1,
+  "orderId": 1,
+  "livreur": {
+    "id": 1,
+    "nom": "David",
+    "telephone": "0601"
+  },
+  "status": null,
+  "creationDate": null
+}

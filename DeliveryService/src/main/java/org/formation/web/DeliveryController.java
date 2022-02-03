@@ -54,7 +54,7 @@ public class DeliveryController {
 	}
 
 	@GetMapping(path = "/order/{orderId}")
-	public Livraison getLivraisonByOrderId(Long orderId) {
+	public Livraison getLivraisonByOrderId(@PathVariable long orderId) {
 		return livraisonRepository.findByOrderId(orderId);
 	}
 

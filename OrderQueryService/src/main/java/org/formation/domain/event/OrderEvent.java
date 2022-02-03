@@ -5,7 +5,6 @@ import lombok.Data;
 @Data
 public class OrderEvent {
 
-	private long orderId;
+	long orderId;
 	private String status;
-	
 }

@@ -35,7 +35,7 @@ public class QueryService {
 	
 	public OrderDto getOrderDetails(Long orderId) {
 		
-		Order order = orderRestTemplate.getForObject("/"+orderId, Order.class);
+		Order order = orderRestTemplate. getForObject("/"+orderId, Order.class);
 		
 		Livraison livraison = livraisonRestTemplate.getForObject("/"+orderId, Livraison.class);
 		

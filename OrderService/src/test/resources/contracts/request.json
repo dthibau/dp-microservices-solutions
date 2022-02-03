@@ -1,0 +1,17 @@
+{
+  "lineItems": [
+    {
+      "refProduct": "REF1",
+      "price": 10.0,
+      "quantity": 2
+    }
+  ],
+  "deliveryAddress": {
+    "rue": "RUE",
+    "ville": "VILLE",
+    "codePostal": "75001"
+  },
+  "paymentInformation": {
+    "paymentToken" : "AA"
+  }
+}
