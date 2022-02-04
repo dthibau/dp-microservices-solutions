@@ -10,8 +10,12 @@ spring:
     url:
       'jdbc:h2:mem:testdb'
   jpa:
-    show-sql: true
-
+    show-sql: false
+  zipkin:
+    base-url: http://zipkin:9411/
+  sleuth:
+    sampler:
+      probability: 1
 app:
   channel:
     order-status: 'order-status'
