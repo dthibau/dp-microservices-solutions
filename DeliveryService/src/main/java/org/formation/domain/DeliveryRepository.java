@@ -9,6 +9,6 @@ public interface DeliveryRepository extends JpaRepository<Delivery, Long>{
 
 	public Delivery findByOrderId(Long orderId);
 		
-	@Query("from Delivery l where l.livreur is null")
+	@Query("from Delivery l where l.courier is null")
 	public List<Delivery> findUnaffected();
 }

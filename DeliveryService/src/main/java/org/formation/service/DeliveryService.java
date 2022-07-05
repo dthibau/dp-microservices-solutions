@@ -54,7 +54,7 @@ public class DeliveryService {
 	public Delivery affectLivreur(Long livraisonId, Long livreurId) {
 		Delivery livraison = deliveryRepository.findById(livraisonId).orElseThrow();
 		Courier livreur = courierRepository.findById(livreurId).orElseThrow();
-		livraison.setLivreur(livreur);
+		livraison.setCourier(livreur);
 		deliveryRepository.save(livraison);
 
 		DeliveryEvent event = new DeliveryEvent(livraison, "AFFECTE");
