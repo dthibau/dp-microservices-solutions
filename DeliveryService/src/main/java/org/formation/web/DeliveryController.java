@@ -1,29 +1,39 @@
 package org.formation.web;
 
+import org.formation.domain.Delivery;
+import org.formation.domain.Position;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/delivery")
+@RequestMapping("/api/deliveries")
 public class DeliveryController {
 
-	@PostMapping(path = "/pick/{deliveryId}")
-	public ResponseEntity<Void> noteDeliveryPickedUp(@PathVariable long deliveryId) {
-		return null;
-	}
-	
-	@PostMapping(path = "/position")
-	public ResponseEntity<Void> updatePosition(@RequestBody Position position) {
+	@GetMapping
+	public List<Delivery> findDeliveries(@RequestParam(required = false) String status) {
 		return null;
 	}
 
-	@PostMapping(path = "/delivered/{deliveryId}")
+	@GetMapping(path = "/{orderId}")
+	public Delivery findDeliveryByOrderId(@PathVariable long orderId) {
+		return null;
+	}
+
+	@PostMapping
+	public ResponseEntity<Delivery> createDelivery(@RequestParam long orderId, @RequestParam long ticketId) {
+		return null;
+	}
+
+	@PatchMapping(path = "/{deliveryId}/couriers/{courierId}")
+	public ResponseEntity<Void> noteDeliveryPickUp(@PathVariable long deliveryId, @PathVariable long courierId) {
+		return null;
+	}
+
+	@PatchMapping(path = "/{deliveryId}/delivered")
 	public ResponseEntity<Void> noteDeliveryDelivered(@PathVariable long deliveryId) {
 		return null;
 	}
-	
+
 }

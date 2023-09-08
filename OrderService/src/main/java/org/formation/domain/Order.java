@@ -4,21 +4,13 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.Data;
 
 @Entity
 @Data
+@Table(name = "torder")
 public class Order {
 
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,9 +27,17 @@ public class Order {
 	private PaymentInformation paymentInformation;
 	
 	@Embedded
-	  private DeliveryInformation deliveryInformation;
+	private DeliveryInformation deliveryInformation;
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "order")
 	List<OrderItem> orderItems = new ArrayList<>();
-	
+
+	@Transient
+	float total() {
+		float total = 0;
+		for ( OrderItem item : orderItems ) {
+			total += item.getQuantity() * item.getPrice();
+		}
+		return total - discount*total;
+	}
 }

@@ -12,7 +12,7 @@ import lombok.Data;
 
 @Entity
 @Data
-public class Livraison {
+public class Delivery {
 
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
@@ -20,7 +20,7 @@ public class Livraison {
 	private String noCommande;
 	
 	@OneToOne
-	private Livreur livreur;
+	private Courier livreur;
 	
 	private Status status;
 	
@@ -44,7 +44,7 @@ public class Livraison {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Livraison other = (Livraison) obj;
+		Delivery other = (Delivery) obj;
 		if (id != other.id)
 			return false;
 		return true;
