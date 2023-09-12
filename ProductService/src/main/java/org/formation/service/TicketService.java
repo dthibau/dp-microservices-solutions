@@ -2,12 +2,13 @@ package org.formation.service;
 
 import java.util.List;
 
-import org.formation.domain.ChangeStatusEvent;
-import org.formation.domain.ChangeStatusEventRepository;
+import org.formation.domain.MaxWeightExceededException;
 import org.formation.domain.ProductRequest;
+import org.formation.domain.ResultDomain;
 import org.formation.domain.Ticket;
 import org.formation.domain.TicketRepository;
-import org.formation.domain.TicketStatus;
+import org.formation.service.event.TicketStatusEvent;
+import org.formation.service.event.TicketStatusEventRepository;
 import org.formation.service.saga.CommandResponse;
 import org.formation.service.saga.TicketCommand;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,73 +32,71 @@ public class TicketService {
 	TicketRepository ticketRepository;
 	
 	@Autowired
-	ChangeStatusEventRepository eventRepository;
+	TicketStatusEventRepository eventRepository;
 	
-	@Autowired
-	EventService eventService;
+
 	
 	@Autowired
 	KafkaTemplate<Long, CommandResponse> commandResponseTemplate;
 
-	@KafkaListener(topics = "#{'${app.channel.ticket-command}'}", id = "handleCreate")
+	@KafkaListener(topics = "#{'${app.channel.ticket-command}'}", id = "ticket-service")
 	public void handleTicketCommand(TicketCommand ticketCommand) {
-		log.info("Receivieng command : " + ticketCommand);
+		log.info("Receiving command : " + ticketCommand);
+		ResultDomain resultDomain = null;
 		switch ( ticketCommand.getCommand() ) {
 		case "TICKET_CREATE" :
-			handleCreateTicketCommand(ticketCommand);
+			resultDomain = handleCreateTicketCommand(ticketCommand.getOrderId(), ticketCommand.getProductRequest());
 			break;
 		case "TICKET_APPROVE" :
-			handleApproveTicketCommand(ticketCommand);
+			resultDomain = handleApproveTicketCommand(ticketCommand);
 			break;
 		case "TICKET_REJECT":
-			handleRejectTicketCommand(ticketCommand);
-			break;
+			resultDomain = handleRejectTicketCommand(ticketCommand);
+			break;		
+		}
+		if ( resultDomain != null )
+			_storeResultDomain(resultDomain);
 		
+	}
+	public ResultDomain handleCreateTicketCommand(long orderId, List<ProductRequest> productRequest) {
+		ResultDomain ret = null;
+		try {
+			ret = Ticket.createTicket( orderId, productRequest);
+			commandResponseTemplate.send(ORDER_SAGA_CHANNEL, new CommandResponse(orderId,0,"TICKET_CREATE"));
+		} catch (MaxWeightExceededException e) {
+			commandResponseTemplate.send(ORDER_SAGA_CHANNEL, new CommandResponse(orderId,-1,"TICKET_CREATE"));
 		}
 		
-	}
-	public void handleCreateTicketCommand(TicketCommand createTicketCommand) {
-		Ticket ticket = createTicket(createTicketCommand.getOrderId(), createTicketCommand.getProductRequest());
-		commandResponseTemplate.send(ORDER_SAGA_CHANNEL, new CommandResponse(ticket.getOrderId(),0,"TICKET_CREATE"));
+		return ret;
 
 	}
-	public void handleApproveTicketCommand(TicketCommand approveTicketCommand) {
+	public ResultDomain handleApproveTicketCommand(TicketCommand approveTicketCommand) {
 
 		Ticket ticket = ticketRepository.findByOrderId(approveTicketCommand.getOrderId());
-		ticket.setStatus(TicketStatus.CREATED);
-		ticketRepository.save(ticket);
+		return ticket.approveTicket();
+		
 	}
-	public void handleRejectTicketCommand(TicketCommand rejectTicketCommand) {
+	public ResultDomain handleRejectTicketCommand(TicketCommand rejectTicketCommand) {
 
 		Ticket ticket = ticketRepository.findByOrderId(rejectTicketCommand.getOrderId());
-		ticket.setStatus(TicketStatus.REJECTED);
-		ticketRepository.save(ticket);
+		return ticket.rejectTicket();
 	}
-	public Ticket createTicket(long orderId, List<ProductRequest> productsRequest) {
-		Ticket t = new Ticket();
-		t.setOrderId(orderId);
-		t.setProductRequests(productsRequest);
-		t.setStatus(TicketStatus.PENDING);
-		
-		t = ticketRepository.save(t);
-		
-		return t;
-	}
+	
 	
 	public Ticket readyToPickUp(Long ticketId) {
 		
 		Ticket t = ticketRepository.findById(ticketId).orElseThrow();
-		ChangeStatusEvent event = new ChangeStatusEvent(t, t.getStatus(),TicketStatus.READY_TO_PICK);
+		ResultDomain resultDomain = t.readyToPickUp();
+		_storeResultDomain(resultDomain);
 		
-		t.setStatus(TicketStatus.READY_TO_PICK);
+		return resultDomain.getTicket();
 		
-		
-		ticketRepository.save(t);
-		
-		eventRepository.save(event);
-
-		return t;
-		
-
+	}
+	
+	private void _storeResultDomain(ResultDomain resultDomain) {
+		Ticket t = ticketRepository.save(resultDomain.getTicket());
+		TicketStatusEvent ticketStatusEvent = resultDomain.getTicketStatusEvent();
+		ticketStatusEvent.setTicketId(t.getId());
+		eventRepository.save(ticketStatusEvent);
 	}
 }

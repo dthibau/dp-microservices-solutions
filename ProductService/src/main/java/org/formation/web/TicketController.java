@@ -3,6 +3,7 @@ package org.formation.web;
 import java.util.List;
 
 import org.formation.domain.ProductRequest;
+import org.formation.domain.ResultDomain;
 import org.formation.domain.Ticket;
 import org.formation.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +35,10 @@ public class TicketController {
 	public ResponseEntity<Ticket> acceptOrder(@PathVariable Long orderId, @RequestBody List<ProductRequest> productsRequest) {
 		
 		
-		Ticket t = ticketService.createTicket(orderId, productsRequest);
-		log.info("Instance " + port + " created a ticket "+ t);
+		ResultDomain resultDomain = ticketService.handleCreateTicketCommand(orderId, productsRequest);
+		log.info("Instance " + port + " created a ticket "+ resultDomain.getTicket());
 		
-		return new ResponseEntity<Ticket>(t,HttpStatus.CREATED);
+		return new ResponseEntity<Ticket>(resultDomain.getTicket(),HttpStatus.CREATED);
 	}
 	
 	@PostMapping(path = "/{ticketId}/pickup")
