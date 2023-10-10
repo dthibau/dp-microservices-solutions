@@ -11,24 +11,40 @@ spring:
             - Path= /order/**
           filters:
             - RewritePath=/order/?(?<remaining>.*), /$\{remaining}
+            - name: CircuitBreaker
+              args:
+                name: orderCircuitBreaker
+                fallbackUri: forward:/fallback
         - id: route-product
           uri: lb://PRODUCTSERVICE
           predicates:
             - Path= /product/**
           filters:
             - RewritePath=/product/?(?<remaining>.*), /$\{remaining}
+            - name: CircuitBreaker
+              args:
+                name: productCircuitBreaker
+                fallbackUri: forward:/fallback
         - id: route-delivery
           uri: lb://DELIVERYSERVICE
           predicates:
             - Path= /delivery/**
           filters:
             - RewritePath=/delivery/?(?<remaining>.*), /$\{remaining}
+            - name: CircuitBreaker
+              args:
+                name: deliveryCircuitBreaker
+                fallbackUri: forward:/fallback
         - id: route-query
           uri: lb://ORDERQUERYSERVICE
           predicates:
             - Path= /query/**
           filters:
             - RewritePath=/query/?(?<remaining>.*), /$\{remaining}
+            - name: CircuitBreaker
+              args:
+                name: orderQueryCircuitBreaker
+                fallbackUri: forward:/fallback
       discovery:
         locator:
           enabled: false

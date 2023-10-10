@@ -9,7 +9,12 @@ eureka:
     metadataMap:
       zone: zone1
     
-
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+        
 logging:
   level:
     root: INFO
