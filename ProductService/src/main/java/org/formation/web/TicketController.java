@@ -1,6 +1,7 @@
 package org.formation.web;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.formation.domain.ProductRequest;
 import org.formation.domain.ResultDomain;
@@ -38,7 +39,7 @@ public class TicketController {
 
 	@GetMapping("/approved")
 	public List<Ticket> findApproved() {
-		return ticketRepository.findAll().stream().filter(t -> t.getStatus().equals(TicketStatus.APPROVED)).toList();
+		return ticketRepository.findAll().stream().filter(t -> t.getStatus().equals(TicketStatus.APPROVED)).collect(Collectors.toList());
 	}
 	
 	@PostMapping(path="/{orderId}")

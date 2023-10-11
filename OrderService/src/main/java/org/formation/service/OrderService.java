@@ -36,7 +36,7 @@ public class OrderService {
 		// Save in local DataBase
 		Order order = orderRepository.save(createOrderRequest.getOrder());
 		
-		List<ProductRequest> productRequest = order.getOrderItems().stream().map(i -> new ProductRequest(i)).toList();
+		List<ProductRequest> productRequest = order.getOrderItems().stream().map(i -> new ProductRequest(i)).collect(Collectors.toList());
 
 		OrderEvent event = new OrderEvent(order.getId(), productRequest, order.getStatus());
 		
