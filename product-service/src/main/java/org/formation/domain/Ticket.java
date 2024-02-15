@@ -2,6 +2,7 @@ package org.formation.domain;
 
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -23,7 +24,7 @@ public class Ticket {
 	@Enumerated(EnumType.STRING)
 	private TicketStatus status;
 	
-	@OneToMany
+	@OneToMany(cascade = CascadeType.ALL)
 	List<ProductRequest> productRequests;
 	
 	

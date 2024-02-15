@@ -37,7 +37,7 @@ public class Order {
 	@Embedded
 	  private DeliveryInformation deliveryInformation;
 	
-	@OneToMany(cascade = CascadeType.ALL, mappedBy = "order")
+	@OneToMany(cascade = CascadeType.ALL)
 	List<OrderItem> orderItems = new ArrayList<>();
 	
 }
