@@ -2,8 +2,7 @@ package org.formation.domain;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.Embedded;
-
+import jakarta.persistence.Embedded;
 import lombok.Data;
 
 @Data
