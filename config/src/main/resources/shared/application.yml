@@ -1,0 +1,9 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+        - env
+        - beans
+        - health
+        - mappings
