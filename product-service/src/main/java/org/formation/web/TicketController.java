@@ -30,7 +30,16 @@ public class TicketController {
 	@PostMapping(path="/{orderId}")
  	public ResponseEntity<Ticket> acceptOrder(@PathVariable Long orderId, @RequestBody List<ProductRequest> productsRequest) {
 		
-		return null;
+		Ticket t = new Ticket();
+		t.setOrderId(""+orderId);
+		t.setProductRequests(productsRequest);
+		t.setStatus(TicketStatus.CREATED);
+		
+		t = ticketRepository.save(t);
+		
+		log.info("Ticket created "+ t);
+		
+		return new ResponseEntity<Ticket>(t,HttpStatus.CREATED);
  	}
 	
 	@PostMapping(path = "/tickets/{ticketId}/pickup")
