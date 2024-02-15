@@ -41,7 +41,7 @@ public class TicketController {
 		return new ResponseEntity<Ticket>(t,HttpStatus.CREATED);
  	}
 	
-	@PostMapping(path = "/tickets/{ticketId}/pickup")
+	@PostMapping(path = "/{ticketId}/pickup")
 	public ResponseEntity<Ticket> noteTicketReadyToPickUp(@PathVariable Long ticketId) {
 		
 		Ticket t = ticketService.readyToPickUp(ticketId);
