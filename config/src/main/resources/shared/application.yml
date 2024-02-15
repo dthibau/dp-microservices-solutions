@@ -1,3 +1,14 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:1111/eureka/
+    healthcheck:
+      enabled: true
+    preferSameZoneEureka: true
+  instance:
+    metadataMap:
+      zone: zone1
+
 management:
   endpoints:
     web:
