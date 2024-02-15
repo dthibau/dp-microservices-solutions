@@ -6,6 +6,7 @@ import org.formation.domain.ProductRequest;
 import org.formation.domain.Ticket;
 import org.formation.domain.TicketStatus;
 import org.formation.domain.repository.TicketRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,9 @@ import lombok.extern.java.Log;
 @RequestMapping("/api/tickets")
 @Log
 public class TicketController {
+	
+	@Value("${server.port}")
+	int port;
 	
 	private final TicketRepository ticketRepository;
 	
@@ -37,7 +41,7 @@ public class TicketController {
 		
 		t = ticketRepository.save(t);
 		
-		log.info("Ticket created "+ t);
+		log.info("Ticket created "+ t + " by Instance " + port);
 		
 		return new ResponseEntity<Ticket>(t,HttpStatus.CREATED);
  	}

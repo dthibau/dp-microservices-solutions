@@ -3,4 +3,15 @@ server:
 
 spring:
   jpa:
-    show-sql: true
+    show-sql: false
+    
+---
+spring:
+  config:
+    activate:
+      on-profile:
+      - replica
+      
+server:
+  port: 9083  
+  
