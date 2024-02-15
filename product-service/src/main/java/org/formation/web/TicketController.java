@@ -5,7 +5,7 @@ import java.util.List;
 import org.formation.domain.ProductRequest;
 import org.formation.domain.Ticket;
 import org.formation.domain.TicketStatus;
-import org.formation.domain.repository.TicketRepository;
+import org.formation.service.TicketService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,21 +25,16 @@ public class TicketController {
 	@Value("${server.port}")
 	int port;
 	
-	private final TicketRepository ticketRepository;
+	private final TicketService ticketService;
 	
-	public TicketController(TicketRepository ticketRepository) {
-		this.ticketRepository = ticketRepository;
+	public TicketController(TicketService ticketService) {
+		this.ticketService = ticketService;
 	}
 
 	@PostMapping(path="/{orderId}")
  	public ResponseEntity<Ticket> acceptOrder(@PathVariable Long orderId, @RequestBody List<ProductRequest> productsRequest) {
 		
-		Ticket t = new Ticket();
-		t.setOrderId(""+orderId);
-		t.setProductRequests(productsRequest);
-		t.setStatus(TicketStatus.CREATED);
-		
-		t = ticketRepository.save(t);
+		Ticket t = ticketService.createTicket(orderId, productsRequest);
 		
 		log.info("Ticket created "+ t + " by Instance " + port);
 		
@@ -48,6 +43,11 @@ public class TicketController {
 	
 	@PostMapping(path = "/tickets/{ticketId}/pickup")
 	public ResponseEntity<Ticket> noteTicketReadyToPickUp(@PathVariable Long ticketId) {
-		return null;
+		
+		Ticket t = ticketService.readyToPickUp(ticketId);
+		
+		log.info("Ticket readyToPickUp "+ t.getId());
+		
+		return new ResponseEntity<Ticket>(t,HttpStatus.OK);
 	}
 }

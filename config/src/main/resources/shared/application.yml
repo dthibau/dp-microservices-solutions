@@ -18,3 +18,7 @@ management:
         - beans
         - health
         - mappings
+        
+        
+channels:
+  ticket: 'tickets'

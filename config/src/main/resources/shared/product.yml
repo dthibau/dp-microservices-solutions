@@ -4,6 +4,11 @@ server:
 spring:
   jpa:
     show-sql: false
+
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.LongSerializer    
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer    
     
 ---
 spring:
