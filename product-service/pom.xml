@@ -10,10 +10,10 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>org.formation</groupId>
-	<artifactId>DeliveryService</artifactId>
+	<artifactId>product-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>DeliveryService</name>
-	<description>Micro-service gérant les livraisons et les livreurs</description>
+	<name>ProductService</name>
+	<description>Micro-service gérant le stock et les préparations de livraison (ticket)</description>
 	<properties>
 		<java.version>21</java.version>
 	</properties>
