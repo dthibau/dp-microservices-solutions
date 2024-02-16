@@ -20,6 +20,8 @@ management:
         - mappings
         
 spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
   kafka:
     producer:
       key-serializer: org.apache.kafka.common.serialization.LongSerializer    

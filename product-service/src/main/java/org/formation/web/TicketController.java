@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import lombok.extern.java.Log;
 
 @RestController
@@ -32,7 +34,7 @@ public class TicketController {
 	}
 
 	@PostMapping(path="/{orderId}")
- 	public ResponseEntity<Ticket> acceptOrder(@PathVariable Long orderId, @RequestBody List<ProductRequest> productsRequest) {
+ 	public ResponseEntity<Ticket> acceptOrder(@PathVariable Long orderId, @RequestBody List<ProductRequest> productsRequest) throws JsonProcessingException {
 		
 		Ticket t = ticketService.createTicket(orderId, productsRequest);
 		
@@ -42,7 +44,7 @@ public class TicketController {
  	}
 	
 	@PostMapping(path = "/{ticketId}/pickup")
-	public ResponseEntity<Ticket> noteTicketReadyToPickUp(@PathVariable Long ticketId) {
+	public ResponseEntity<Ticket> noteTicketReadyToPickUp(@PathVariable Long ticketId) throws JsonProcessingException {
 		
 		Ticket t = ticketService.readyToPickUp(ticketId);
 		
