@@ -19,7 +19,7 @@ public class Ticket {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	String orderId;
+	Long orderId;
 	
 	@Enumerated(EnumType.STRING)
 	private TicketStatus status;

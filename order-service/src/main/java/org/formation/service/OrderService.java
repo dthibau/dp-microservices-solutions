@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.formation.domain.Order;
 import org.formation.domain.repository.OrderRepository;
+import org.formation.service.saga.CreateOrderSaga;
 import org.formation.web.CreateOrderRequest;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.stereotype.Service;
@@ -22,12 +23,15 @@ public class OrderService {
 	private final OrderRepository orderRepository;
 
 	private CircuitBreakerFactory cbFactory;
+	
+	private final CreateOrderSaga createOrderSaga;
 
 	public OrderService(OrderRepository orderRepository, RestTemplate productRestTemplate,
-			CircuitBreakerFactory cbFactory) {
+			CircuitBreakerFactory cbFactory, CreateOrderSaga createOrderSaga) {
 		this.orderRepository = orderRepository;
 		this.productRestTemplate = productRestTemplate;
 		this.cbFactory = cbFactory;
+		this.createOrderSaga = createOrderSaga;
 	}
 
 	public Order createOrder(CreateOrderRequest createOrderRequest) {
@@ -35,10 +39,10 @@ public class OrderService {
 		// Save in local DataBase
 		Order order = orderRepository.save(createOrderRequest.getOrder());
 
-		Ticket t = _createTicket(order);
+		createOrderSaga.startSaga(order);
 		
-		log.info("Ticket created " + t);
 
+		
 		return order;
 	}
 

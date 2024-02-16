@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 @Transactional
 public class TicketService {
@@ -32,15 +34,35 @@ public class TicketService {
 
 	public Ticket createTicket(Long orderId, List<ProductRequest> productsRequest) throws JsonProcessingException {
 		Ticket t = new Ticket();
-		t.setOrderId("" + orderId);
+		t.setOrderId(orderId);
 		t.setProductRequests(productsRequest);
-		t.setStatus(TicketStatus.CREATED);
+		t.setStatus(TicketStatus.PENDING);
 
 		t = ticketRepository.save(t);
-		TicketEvent event = new TicketEvent(null,null, TicketStatus.CREATED, t.getId(), mapper.writeValueAsString(t));
+		TicketEvent event = new TicketEvent(null,null, TicketStatus.PENDING, t.getId(), mapper.writeValueAsString(t));
 		ticketEventRepository.save(event);
 
 		return t;
+	}
+	
+	public Ticket approveTicket(Long orderId) throws JsonProcessingException {
+		Ticket ticket = ticketRepository.findByOrderId(orderId).orElseThrow(() -> new EntityNotFoundException("No corresponfing ticket for orderId=" + orderId));
+		ticket.setStatus(TicketStatus.CREATED);
+		ticketRepository.save(ticket);
+		TicketEvent event = new TicketEvent(null,null, TicketStatus.CREATED, ticket.getId(), mapper.writeValueAsString(ticket));
+		ticketEventRepository.save(event);
+		
+		return ticket;
+	}
+	
+	public Ticket rejectTicket(Long orderId) throws JsonProcessingException {
+		Ticket ticket = ticketRepository.findByOrderId(orderId).orElseThrow(() -> new EntityNotFoundException("No corresponfing ticket for orderId=" + orderId));;
+		ticket.setStatus(TicketStatus.REJECTED);
+		ticketRepository.save(ticket);
+		TicketEvent event = new TicketEvent(null,null, TicketStatus.REJECTED, ticket.getId(), mapper.writeValueAsString(ticket));
+		ticketEventRepository.save(event);
+		
+		return ticket;
 	}
 
 	public Ticket readyToPickUp(Long ticketId) throws JsonProcessingException {

@@ -34,3 +34,6 @@ spring:
         
 channels:
   ticket: 'tickets'
+  ticket-command: 'tickets-command'
+  payment-command: 'payments-command'
+  order-response: 'order-response'
