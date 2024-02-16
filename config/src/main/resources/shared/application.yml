@@ -33,7 +33,9 @@ spring:
         spring.json.trusted.packages: '*'   
         
 channels:
+  order: 'orders'
   ticket: 'tickets'
+  delivery: 'livraisons'
   ticket-command: 'tickets-command'
   payment-command: 'payments-command'
   order-response: 'order-response'

@@ -3,6 +3,7 @@ package org.formation.domain;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,4 +24,7 @@ public class Livreur {
 
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<Review> reviews;
+	
+	@Embedded
+	private Position position;
 }

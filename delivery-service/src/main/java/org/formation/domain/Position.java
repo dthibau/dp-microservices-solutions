@@ -1,11 +1,12 @@
-package org.formation.web;
+package org.formation.domain;
 
+import jakarta.persistence.Embeddable;
 import lombok.Data;
 
 @Data
+@Embeddable
 public class Position {
 
-	private String deliveryId;
 	private Float latitude;
 	private Float longitude;
 	

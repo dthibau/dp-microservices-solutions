@@ -23,7 +23,7 @@ public class IncomingEventService {
 			switch (ticketEvent.getNewStatus()) {
 	
 			case "READY_TO_PICK":
-				Livraison l = livraisonService.createDelivery(ticketEvent.getTicket().getTicketId());
+				Livraison l = livraisonService.createDelivery(ticketEvent.getOrderId(), ticketEvent.getTicketId());
 				log.info("Livraison créée " + l);
 				break;			
 			}

@@ -3,6 +3,7 @@ package org.formation.service.saga;
 import org.formation.domain.Order;
 import org.formation.domain.OrderStatus;
 import org.formation.domain.repository.OrderRepository;
+import org.formation.service.OrderEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -26,16 +27,22 @@ public class CreateOrderSaga {
 	@Value("${channels.payment-command}")
 	public String PAYMENT_COMMAND_CHANNEL;
 	
+	@Value("${channels.order}")
+	String ORDER_CHANNEL;
+	
 	private final KafkaTemplate<Long,TicketCommand> ticketKafkaTemplate;
 	
 	private final KafkaTemplate<Long,PaymentCommand> paymentKafkaTemplate;
 	
+	private final KafkaTemplate<Long, OrderEvent> kafkaTemplate;
+	
 	private final OrderRepository orderRepository;
 	
-	public CreateOrderSaga(OrderRepository orderRepository, KafkaTemplate<Long,TicketCommand> ticketKafkaTemplate, KafkaTemplate<Long,PaymentCommand> paymentKafkaTemplate) {
+	public CreateOrderSaga(OrderRepository orderRepository, KafkaTemplate<Long,TicketCommand> ticketKafkaTemplate, KafkaTemplate<Long,PaymentCommand> paymentKafkaTemplate, KafkaTemplate<Long, OrderEvent> kafkaTemplate) {
 		this.orderRepository = orderRepository;
 		this.ticketKafkaTemplate = ticketKafkaTemplate;
 		this.paymentKafkaTemplate = paymentKafkaTemplate;
+		this.kafkaTemplate = kafkaTemplate;
 	}
 	
 	
@@ -89,6 +96,7 @@ public class CreateOrderSaga {
 					new TicketCommand(order.getId(), "TICKET_APPROVE", order.getProductRequests()));
 			order.setStatus(OrderStatus.APPROVED);
 			orderRepository.save(order);
+			kafkaTemplate.send(ORDER_CHANNEL,new OrderEvent(order.getId(),order.getStatus().toString(),order));
 
 		} else {
 			log.info("SAGA Payment NOK : Sending TICKET_Reject  REJECT Command locally " + order.getPaymentInformation());

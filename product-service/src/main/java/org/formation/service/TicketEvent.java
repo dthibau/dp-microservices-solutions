@@ -28,6 +28,8 @@ public class TicketEvent {
 	
 	private Long ticketId; 
 	
+	private Long orderId; 
+	
 	private String ticketPayload;
 	
 

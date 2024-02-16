@@ -1,5 +1,6 @@
 package org.formation.web;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class CreateOrderRequest {
 
 	public Order getOrder() {
 		Order order = new Order();
+		order.setDate(Instant.now());
 		DeliveryInformation df = new DeliveryInformation();
 		df.setAddress(deliveryAddress);
 		order.setDeliveryInformation(df);

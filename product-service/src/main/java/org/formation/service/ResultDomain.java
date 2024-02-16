@@ -24,6 +24,6 @@ public class ResultDomain {
 			} catch ( JsonProcessingException e) {
 				e.printStackTrace();
 			}
-			this.ticketEvent = new TicketEvent(null,oldStatus, ticket.getStatus(),ticket.getId(),payload);
+			this.ticketEvent = new TicketEvent(null,oldStatus, ticket.getStatus(),ticket.getId(), ticket.getOrderId(), payload);
 		}
 }
