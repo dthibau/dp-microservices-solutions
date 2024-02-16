@@ -2,9 +2,9 @@ package org.formation.service;
 
 import java.util.List;
 
+import org.formation.domain.MaxWeightExceededException;
 import org.formation.domain.ProductRequest;
 import org.formation.domain.Ticket;
-import org.formation.domain.TicketStatus;
 import org.formation.domain.repository.TicketEventRepository;
 import org.formation.domain.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,48 +32,43 @@ public class TicketService {
 		this.ticketEventRepository = ticketEventRepository;
 	}
 
-	public Ticket createTicket(Long orderId, List<ProductRequest> productsRequest) throws JsonProcessingException {
-		Ticket t = new Ticket();
-		t.setOrderId(orderId);
-		t.setProductRequests(productsRequest);
-		t.setStatus(TicketStatus.PENDING);
+	public Ticket createTicket(Long orderId, List<ProductRequest> productsRequest) throws JsonProcessingException, MaxWeightExceededException {
+		
+		ResultDomain resultDomain = Ticket.createTicket(orderId, productsRequest);
 
-		t = ticketRepository.save(t);
-		TicketEvent event = new TicketEvent(null,null, TicketStatus.PENDING, t.getId(), mapper.writeValueAsString(t));
-		ticketEventRepository.save(event);
+		ticketRepository.save(resultDomain.getTicket());
+		ticketEventRepository.save(resultDomain.getTicketEvent());
 
-		return t;
+		return resultDomain.getTicket();
 	}
 	
 	public Ticket approveTicket(Long orderId) throws JsonProcessingException {
 		Ticket ticket = ticketRepository.findByOrderId(orderId).orElseThrow(() -> new EntityNotFoundException("No corresponfing ticket for orderId=" + orderId));
-		ticket.setStatus(TicketStatus.CREATED);
-		ticketRepository.save(ticket);
-		TicketEvent event = new TicketEvent(null,null, TicketStatus.CREATED, ticket.getId(), mapper.writeValueAsString(ticket));
-		ticketEventRepository.save(event);
+		ResultDomain resultDomain = ticket.approveTicket();
 		
-		return ticket;
+		ticketRepository.save(resultDomain.getTicket());
+		ticketEventRepository.save(resultDomain.getTicketEvent());
+
+		return resultDomain.getTicket();
 	}
 	
 	public Ticket rejectTicket(Long orderId) throws JsonProcessingException {
 		Ticket ticket = ticketRepository.findByOrderId(orderId).orElseThrow(() -> new EntityNotFoundException("No corresponfing ticket for orderId=" + orderId));;
-		ticket.setStatus(TicketStatus.REJECTED);
-		ticketRepository.save(ticket);
-		TicketEvent event = new TicketEvent(null,null, TicketStatus.REJECTED, ticket.getId(), mapper.writeValueAsString(ticket));
-		ticketEventRepository.save(event);
+		ResultDomain resultDomain = ticket.rejectTicket();
 		
-		return ticket;
+		ticketRepository.save(resultDomain.getTicket());
+		ticketEventRepository.save(resultDomain.getTicketEvent());
+
+		return resultDomain.getTicket();
 	}
 
 	public Ticket readyToPickUp(Long ticketId) throws JsonProcessingException {
-		Ticket t = ticketRepository.findById(ticketId).orElseThrow();
-		TicketEvent event = new TicketEvent(null,t.getStatus(), TicketStatus.READY_TO_PICK, t.getId(), mapper.writeValueAsString(t));
+		Ticket ticket = ticketRepository.findById(ticketId).orElseThrow();
+		ResultDomain resultDomain = ticket.readyToPickUp();
+		
+		ticketRepository.save(resultDomain.getTicket());
+		ticketEventRepository.save(resultDomain.getTicketEvent());
 
-		t.setStatus(TicketStatus.READY_TO_PICK);
-		ticketEventRepository.save(event);
-
-		ticketRepository.save(t);
-
-		return t;
+		return resultDomain.getTicket();
 	}
 }

@@ -2,6 +2,7 @@ package org.formation.web;
 
 import java.util.List;
 
+import org.formation.domain.MaxWeightExceededException;
 import org.formation.domain.ProductRequest;
 import org.formation.domain.Ticket;
 import org.formation.domain.TicketStatus;
@@ -34,7 +35,7 @@ public class TicketController {
 	}
 
 	@PostMapping(path="/{orderId}")
- 	public ResponseEntity<Ticket> acceptOrder(@PathVariable Long orderId, @RequestBody List<ProductRequest> productsRequest) throws JsonProcessingException {
+ 	public ResponseEntity<Ticket> acceptOrder(@PathVariable Long orderId, @RequestBody List<ProductRequest> productsRequest) throws JsonProcessingException, MaxWeightExceededException {
 		
 		Ticket t = ticketService.createTicket(orderId, productsRequest);
 		

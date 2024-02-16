@@ -1,6 +1,6 @@
 package org.formation.service.saga;
 
-import org.formation.domain.Ticket;
+import org.formation.domain.MaxWeightExceededException;
 import org.formation.service.TicketService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -32,21 +32,27 @@ public class CreateOrderSaga {
 	@KafkaListener(topics = "#{'${channels.ticket-command}'}", id = "handleCreate")
 	public void handleTicketCommand(TicketCommand ticketCommand) throws JsonProcessingException {
 		log.info("Receiving command : " + ticketCommand);
-		Ticket ticket = null;
+
+		int outcome = 0;
 		switch (ticketCommand.getCommande()) {
 		case "TICKET_CREATE":
-			ticket = ticketService.createTicket(ticketCommand.getOrderId(), ticketCommand.getProductRequest());
+			try {
+				ticketService.createTicket(ticketCommand.getOrderId(), ticketCommand.getProductRequest());
+			} catch (MaxWeightExceededException e) {
+				log.warning("Cannot create this ticket " + e);
+				outcome = -1;
+			}
 			break;
 		case "TICKET_APPROVE":
-			ticket = ticketService.approveTicket(ticketCommand.getOrderId());
+			ticketService.approveTicket(ticketCommand.getOrderId());
 			break;
 		case "TICKET_REJECT":
-			ticket = ticketService.rejectTicket(ticketCommand.getOrderId());
+			ticketService.rejectTicket(ticketCommand.getOrderId());
 			break;
 
 		}
 		commandResponseTemplate.send(ORDER_RESPONSE_CHANNEL,
-				new CommandResponse(ticket.getOrderId(), 0, ticketCommand.getCommande()));
+				new CommandResponse(ticketCommand.getOrderId(), outcome, ticketCommand.getCommande()));
 
 	}
 

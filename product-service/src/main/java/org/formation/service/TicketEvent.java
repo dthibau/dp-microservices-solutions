@@ -1,9 +1,7 @@
 package org.formation.service;
 
-import org.formation.domain.Ticket;
 import org.formation.domain.TicketStatus;
 
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
