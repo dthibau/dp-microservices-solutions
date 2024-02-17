@@ -7,7 +7,31 @@ spring:
     username: postgres
     password: postgres
 
-    
+  cloud:
+    gateway:
+      routes:
+        - id: route-order
+          uri: lb://ORDER
+          predicates:
+            - Path= /orders
+            - Method=POST
+          filters:
+            - RewritePath=/orders, /api/orders
+        - id: route-product
+          uri: lb://PRODUCT
+          predicates:
+            - Path= /tickets/**
+          filters:
+            - RewritePath=/tickets/?(?<remaining>.*), /api/tickets/$\{remaining}
+        - id: route-livraison
+          uri: lb://DELIVERY
+          predicates:
+            - Path= /livraisons/**, /livraisons
+          filters:
+            - RewritePath=/livraisons?(?<remaining>.*), /api/livraisons$\{remaining}
+      discovery:
+        locator:
+          enabled: false    
 
   
 
