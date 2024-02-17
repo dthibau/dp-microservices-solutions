@@ -1,6 +1,7 @@
 package org.formation.web;
 
 import org.formation.domain.OrderDto;
+import org.formation.domain.repository.OrderDtoRepository;
 import org.formation.service.QueryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,17 +20,20 @@ public class QueryController {
 		@Autowired
 		QueryService queryService;
 		
+		@Autowired
+		OrderDtoRepository orderDtoRepository;
+		
 		
 		@GetMapping(path = "/{orderId}")
 		public Mono<OrderDto> getOrderDetails(@PathVariable long orderId) {
 			
-			return queryService.getOrderDetails(orderId);
+			return orderDtoRepository.findById(orderId);
 		}
 		
 		@GetMapping()
 		public Flux<OrderDto> getOrdersDetails() {
 			
-			return queryService.getOrdersDetails();
+			return orderDtoRepository.findAll();
 		}
 	
 }
