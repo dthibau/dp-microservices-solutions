@@ -7,7 +7,16 @@ spring:
       uri:
       - http://localhost:8888
       fail-fast: true
-
+    gateway:
+      httpserver:
+        wiretap: true
+      httpclient:
+        wiretap: true
 logging:
   level:
-    org.springframework.security: debug
+    # org.springframework.security: debug
+#    reactor.netty: TRACE
+    org.springframework.cloud.gateway: debug
+    org.springframework.http.server.reactive: debug
+    org.springframework.web.reactive: debug
+    org.springframework.boot.autoconfigure.web: debug
