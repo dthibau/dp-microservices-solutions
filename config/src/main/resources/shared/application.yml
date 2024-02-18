@@ -33,6 +33,11 @@ spring:
        value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer  
        properties:
         spring.json.trusted.packages: '*'   
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/store
         
 channels:
   order: 'orders'
