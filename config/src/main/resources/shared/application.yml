@@ -14,12 +14,7 @@ management:
   endpoints:
     web:
       exposure:
-        include:
-        - env
-        - beans
-        - health
-        - mappings
-        - gateway
+        include: '*'
   endpoint:
     health:
       show-details: always

@@ -19,7 +19,7 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		
-		return http.authorizeHttpRequests(acl -> acl.anyRequest().hasAnyRole("CLIENT"))
+		return http.authorizeHttpRequests(acl -> acl.requestMatchers("/actuator/**").permitAll().anyRequest().hasAnyRole("CLIENT"))
 				 .oauth2ResourceServer(r -> r.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
 		    .csrf(csrf -> csrf.disable())
 		    .build();
