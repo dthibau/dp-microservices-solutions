@@ -4,3 +4,20 @@ server:
 spring:
   jpa:
     show-sql: false
+
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            token-uri: http://localhost:8180/realms/store/protocol/openid-connect/token
+        registration:
+          store:
+            provider: keycloak
+            client-id: order
+            client-secret: secret
+            client-authentication-method: client_secret_basic
+            authorization-grant-type: client_credentials
+            scope:
+            - openid
+            - service
