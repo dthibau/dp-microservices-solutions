@@ -1,2 +1,6 @@
 .metadata/
 jmeter.log
+.vscode/
+.classpath
+.project
+.settings/

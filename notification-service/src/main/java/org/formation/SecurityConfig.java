@@ -12,7 +12,7 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		
-		return http.authorizeHttpRequests(acl -> acl.anyRequest().hasAuthority("SCOPE_service"))
+		return http.authorizeHttpRequests(acl -> acl.requestMatchers("/actuator/**").permitAll().anyRequest().hasAuthority("SCOPE_service"))
 				 .oauth2ResourceServer(r -> r.jwt(Customizer.withDefaults()))
 		    .csrf(csrf -> csrf.disable())
 		    .build();
