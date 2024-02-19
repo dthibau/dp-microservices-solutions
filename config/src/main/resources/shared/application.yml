@@ -39,6 +39,9 @@ spring:
         jwt:
           issuer-uri: http://localhost:8080/realms/formation
         
+logging:
+  level:
+    '[org.springframework.security]': debug 
 channels:
   order: 'orders'
   ticket: 'tickets'
