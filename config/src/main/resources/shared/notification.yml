@@ -1,0 +1,18 @@
+server:
+  port: 8084
+
+notification:
+  host: localhost
+  port: 2525
+  username: toto
+  password: secret
+
+---
+spring:
+  config:
+    activate:
+      on-profile:
+      - replica
+    
+server:
+  port: 9084
