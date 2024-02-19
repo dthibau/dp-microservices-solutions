@@ -18,4 +18,10 @@ public class DependenciesConfiguration {
 	RestTemplate productRestTemplate() {
 		return builder.rootUri("http://product").build();
 	}
+	
+	@Bean
+	@LoadBalanced
+	RestTemplate notificationRestTemplate() {
+		return builder.rootUri("http://notification").build();
+	}
 }
