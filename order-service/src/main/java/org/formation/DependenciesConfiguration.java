@@ -38,7 +38,6 @@ public class DependenciesConfiguration {
 		rest.getInterceptors().add((request, body, execution) -> {
 			OAuth2AccessToken accessToken  = tokenService.getToken();
 			
-			System.out.println(accessToken.getTokenValue());
 		    request.getHeaders().setBearerAuth(accessToken.getTokenValue());
 		    return execution.execute(request, body);
 		});
