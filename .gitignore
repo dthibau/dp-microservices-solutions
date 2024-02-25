@@ -4,3 +4,4 @@ jmeter.log
 .classpath
 .project
 .settings/
+**/bin/
