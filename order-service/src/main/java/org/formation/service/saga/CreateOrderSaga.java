@@ -10,6 +10,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.java.Log;
 
@@ -38,11 +40,24 @@ public class CreateOrderSaga {
 	
 	private final OrderRepository orderRepository;
 	
-	public CreateOrderSaga(OrderRepository orderRepository, KafkaTemplate<Long,TicketCommand> ticketKafkaTemplate, KafkaTemplate<Long,PaymentCommand> paymentKafkaTemplate, KafkaTemplate<Long, OrderEvent> kafkaTemplate) {
+	private Counter orderApproved, orderRejected;
+	
+	
+	public CreateOrderSaga(OrderRepository orderRepository, KafkaTemplate<Long,TicketCommand> ticketKafkaTemplate, 
+			KafkaTemplate<Long,PaymentCommand> paymentKafkaTemplate, KafkaTemplate<Long, OrderEvent> kafkaTemplate
+			, MeterRegistry meterRegistry) {
 		this.orderRepository = orderRepository;
 		this.ticketKafkaTemplate = ticketKafkaTemplate;
 		this.paymentKafkaTemplate = paymentKafkaTemplate;
 		this.kafkaTemplate = kafkaTemplate;
+		this.orderApproved = Counter.builder("order.approved").
+                tag("type", "métier").
+                description("Nombre de commande approuvée").
+                register(meterRegistry);
+		this.orderRejected = Counter.builder("order.rejected").
+                tag("type", "métier").
+                description("Nombre de commande rejetée").
+                register(meterRegistry);
 	}
 	
 	
@@ -97,12 +112,14 @@ public class CreateOrderSaga {
 			order.setStatus(OrderStatus.APPROVED);
 			orderRepository.save(order);
 			kafkaTemplate.send(ORDER_CHANNEL,new OrderEvent(order.getId(),order.getStatus().toString(),order));
+			orderApproved.increment();
 
 		} else {
 			log.info("SAGA Payment NOK : Sending TICKET_Reject  REJECT Command locally " + order.getPaymentInformation());
 			// Rejecting order
 			order.setStatus(OrderStatus.REJECTED);
 			orderRepository.save(order);
+			orderRejected.increment();
 			// Rejacting ticket
 			ticketKafkaTemplate.send(TICKET_COMMAND_CHANNEL,
 					new TicketCommand(order.getId(), "TICKET_REJECT", order.getProductRequests()));
