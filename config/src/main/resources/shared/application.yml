@@ -20,6 +20,11 @@ management:
         - health
         - mappings
         - gateway
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
         
 spring:
   datasource:
