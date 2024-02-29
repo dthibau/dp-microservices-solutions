@@ -13,7 +13,7 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityWebFilterChain securitygWebFilterChain(	ServerHttpSecurity http) {
-		return http.authorizeExchange(acl -> acl.anyExchange().authenticated())
+		return http.authorizeExchange(acl -> acl.pathMatchers("/actuator/**").permitAll().anyExchange().authenticated())
 				.oauth2ResourceServer((v -> v.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))))
 				.csrf(csrf -> csrf.disable())
 				.build();
