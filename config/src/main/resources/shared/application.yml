@@ -6,6 +6,7 @@ eureka:
       enabled: true
     preferSameZoneEureka: true
   instance:
+    prefer-ip-address: true
     metadataMap:
       zone: zone1
 
