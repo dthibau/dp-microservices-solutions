@@ -53,3 +53,25 @@ channels:
   ticket-command: 'tickets-command'
   payment-command: 'payments-command'
   order-response: 'order-response'
+
+---
+spring:
+  config:
+    activate:
+      on-profile:
+      - docker
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak:8080/realms/formation
+  kafka:
+    bootstrap-servers:
+    - kafka:9092
+  zipkin:
+    base-url: http://zipkin:9411
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka:1111/eureka/
+

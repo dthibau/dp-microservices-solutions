@@ -33,6 +33,12 @@ spring:
         locator:
           enabled: false    
 
-  
-
+---
+spring:
+  config:
+    activate:
+      on-profile:
+      - docker  
+  r2dbc:
+    url: 'r2dbc:postgresql://gateway-postgresql:5432/gateway'
   

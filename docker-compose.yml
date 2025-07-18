@@ -1,0 +1,184 @@
+services:
+  config:
+    build: ./config/
+    healthcheck:
+        test: curl -f http://localhost:8888/proxy/default && echo 'cool, it works'
+        interval: 10s
+        timeout: 10s
+        retries: 5
+    networks:
+     - back
+    ports:
+     - "8888:8888"
+  eureka:
+    image: dthibau/dp-eureka
+    networks:
+     - back
+    ports:
+     - "1111:1111"
+    depends_on: 
+      config:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config:8888
+  delivery-service:
+    image: dthibau/dp-delivery-service
+    networks:
+     - back
+    restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config:8888
+    depends_on: 
+      config:
+        condition: service_healthy
+  order-service:
+    image: dthibau/dp-order-service
+    networks:
+     - back
+    restart: always
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config:8888
+    depends_on: 
+      config:
+        condition: service_healthy
+  payment-service:
+    image: dthibau/dp-payment-service
+    networks:
+      - back
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config:8888
+    restart: always
+    depends_on: 
+      config:
+        condition: service_healthy
+  product-service:
+    image: dthibau/dp-product-service
+    networks:
+      - back
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config:8888
+    restart: always
+    depends_on: 
+      config:
+        condition: service_healthy
+  gateway:
+    image: dthibau/dp-gateway
+    networks:
+      - front
+      - back
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config:8888
+    ports:
+      - 8000:8000
+    restart: always
+    depends_on: 
+      config:
+        condition: service_healthy
+
+  gateway-postgresql:
+    container_name: gateway-postgresql
+    image: postgres:15.1
+    volumes:
+      - gateway_db:/var/lib/postgresql
+      - gateway_data:/var/lib/postgresql/data
+      - ./init-gateway.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - back
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=gateway
+    ports:
+      - 5432:5432
+
+  gateway-pgadmin4:
+    container_name: gateway-pgadmin4
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@admin.com"
+      PGADMIN_DEFAULT_PASSWORD: "admin"
+    ports:
+      - "81:80"
+    depends_on:
+      - gateway-postgresql
+    networks:
+      - back
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:23.0.7
+    container_name: keycloak-microservice
+    command: 
+      - start-dev
+    ports:
+      - "8080:8080"
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+
+  kafka:
+    image: docker.io/bitnami/kafka:3.7
+    ports:
+      - "9092:9092"
+    networks:
+      - back
+    volumes:
+      - "kafka_data:/bitnami"
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_KRAFT_CLUSTER_ID=abcdefghijklmnopqrstuv
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+
+  redpanda:
+    image : docker.redpanda.com/redpandadata/console:latest
+    ports: 
+      - 8079:8080
+    networks:
+      - back
+    environment:
+      - KAFKA_BROKERS=kafka:9092
+
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - back
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - .grafana/prometheus/:/etc/prometheus/
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - '9090:9090'
+    networks:
+      - back
+  grafana:
+    image: grafana/grafana
+    ports:
+      - '3000:3000'
+    networks:
+      - back
+    volumes:
+      - .grafana/provisioning/:/etc/grafana/provisioning/
+
+volumes:
+  gateway_db:
+  gateway_data:
+  kafka_data:
+
+networks:
+  back:
+  front:
