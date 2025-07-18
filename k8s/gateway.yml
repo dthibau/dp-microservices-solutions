@@ -18,6 +18,8 @@ spec:
         env:
           - name: SPRING_PROFILES_ACTIVE
             value: kubernetes
+          - name: SPRING_CLOUD_CONFIG_URI
+            value: http://config:8888
         image: dthibau/dp-gateway
         imagePullPolicy: Always
 
